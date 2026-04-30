@@ -1,12 +1,14 @@
 """
 Main module calling the request functions and counting the total minutes
 """
-
-from api_requests import get_workflows, get_minutes_from_workflow
-
+from calendar import month
+from datetime import datetime, timedelta
 import os
-from dotenv import load_dotenv
 import json
+
+from dotenv import load_dotenv
+
+from src.api_requests import get_workflows, get_minutes_from_workflow
 
 load_dotenv()
 
@@ -25,6 +27,11 @@ def main():
         print(f"Getting workflows for {repo}")
         workflows = get_workflows(OWNER, repo, BEARER_TOKEN)
         for workflow in workflows:
+            created_at = workflow["created_at"]
+            dt = datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%SZ")
+            if dt < datetime.now() - timedelta(days=30):
+                continue
+
             minutes = get_minutes_from_workflow(OWNER, repo, workflow, BEARER_TOKEN)
             print(f"{workflow["name"]} took {minutes} minutes")
             repo_minutes += minutes
