@@ -1,7 +1,6 @@
 """
 Main module calling the request functions and counting the total minutes
 """
-from calendar import month
 from datetime import datetime, timedelta
 import os
 import json
